@@ -7,8 +7,8 @@ global
 {% if haproxy_chroot != '' %}
   chroot {{ haproxy_chroot }}
 {% endif %}
-  user {{ haproxy_user_sws }}
-  group {{ haproxy_group_sws }}
+  user {{ haproxy_user_custom }}
+  group {{ haproxy_group_custom }}
   daemon
 {% for global_var in haproxy_global_vars %}
   {{ global_var }}
@@ -19,7 +19,7 @@ global
 
 defaults
   log global
-  mode {{ haproxy_mode_sws }}
+  mode {{ haproxy_mode_custom }}
   option  httplog
   option http-server-close
 {% if haproxy_version == '1.4' %}
@@ -32,26 +32,26 @@ defaults
   timeout server 50000
 {% endif %}
 
-{% for backend in haproxy_altbackend_servers %}
+{% for backend in haproxy_backend_servers %}
 backend {{ backend }}
-  mode {{ haproxy_backend_mode_sws }}
+  mode {{ haproxy_backend_mode_custom }}
 {% set ip = lookup('dig',backend) %}
-  server {{ backend }} {{ ip }}:{{ haproxy_backend_port_sws }} cookie {{ backend }} ssl verify none
+  server {{ backend }} {{ ip }}:{{ haproxy_backend_port_custom }} cookie {{ backend }} ssl verify none
 
 {% endfor %}
 
-frontend {{ haproxy_frontend_name_sws }}
-  bind {{ haproxy_frontend_bind_address_sws }}:{{ haproxy_frontend_port_sws }} ssl {% for backend in haproxy_altbackend_servers %} crt {{ backend}}.pem{% endfor %}
-  mode {{ haproxy_frontend_mode_sws }}
+frontend {{ haproxy_frontend_name_custom }}
+  bind {{ haproxy_frontend_bind_address_custom }}:{{ haproxy_frontend_port_custom }} ssl {% for backend in haproxy_backend_servers %} crt {{ backend}}.pem{% endfor %}
+  mode {{ haproxy_frontend_mode_custom }}
   option http-server-close
   option forwardfor
   http-request add-header X-Forwarded-Proto https if { ssl_fc }
   http-request set-header X-Forwarded-Port %[dst_port]
   redirect scheme https if !{ ssl_fc }
   redirect scheme https code 301 if !{ ssl_fc }
-{% for backend in haproxy_altbackend_servers %}
+{% for backend in haproxy_backend_servers %}
   acl {{ backend }} hdr(host) -i {{ backend }}
 {% endfor %}
-{% for backend in haproxy_altbackend_servers %}
+{% for backend in haproxy_backend_servers %}
   use_backend {{ backend }} if {{ backend }}
 {% endfor %}

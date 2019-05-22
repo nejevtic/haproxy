@@ -1,0 +1,60 @@
+---
+haproxy_user_custom: haproxy
+haproxy_group_custom: haproxy
+haproxy_mode_custom: 'http'
+
+# Frontend settings.
+haproxy_frontend_name_custom: 'proxyinfe'
+haproxy_frontend_bind_address_custom: '*'
+haproxy_frontend_port_custom: 443
+haproxy_frontend_mode_custom: 'http'
+
+# Backend settings.
+haproxy_backend_name_custom: 'proxyinbe'
+haproxy_backend_mode_custom: 'http'
+haproxy_backend_port_custom: 443
+
+# List of backend servers.
+haproxy_backend_servers: "{{ groups['proxiedservers'] }}"
+#haproxy_backend_servers:
+#  -  name: backend1.example.com
+#     address: '10.0.0.1'
+#  -  name: backend2.example.com
+#     address: '10.0.0.2'
+#  -  name: backend2.example.com
+#     address: '10.0.0.3'
+
+# Extra global vars (see README for example usage).
+#haproxy_global_vars: []
+ca_path: "/etc/ssl/certs"
+crt_path: "/etc/ssl/private"
+
+backend1.example.com_https_certificate: "backend1.example.com.crt"
+backend1.example.com_https_private_key: "backend1.example.com.key"
+backend2.example.com_https_certificate: "backend2.example.com.crt"
+backend2.example.com_https_private_key: "backend2.example.com.key"
+backend3.example.com_https_certificate: "backend3.example.com.crt"
+backend3.example.com_https_private_key: "backend3.example.com.key"
+backend1.example.com_https_private_key_content: "{{ vault_backend1.example.com_https_private_key_content }}"
+backend2.example.com_https_private_key_content: "{{ vault_backend2.example.com_https_private_key_content }}"
+backend3.example.com_https_private_key_content: "{{ vault_backend3.example.com_https_private_key_content }}"
+
+backend1.example.com_https_certificate_content: |
+  -----BEGIN CERTIFICATE-----
+  MIIJPjCCCCagAwIBAgIUJ8iOtfJUFBahy48sMU9qt0DeYWUwDQYJKoZIhvcNAQEL
+  UPL+svJ/BVeK1bLRk/PWStvV
+  -----END CERTIFICATE-----
+
+backend3.example.com_https_certificate_content: |
+  -----BEGIN CERTIFICATE-----
+  MIIJMjCCCBqgAwIBAgIUQ0IQAF9hsGl0FtnkdyvXTB9EFiYwDQYJKoZIhvcNAQEL
+  BQAwUjELMAkGA1UEBhMCQ0gxFTATBgNVBAoTDFN3aXNzU2lnbiBBRzEsMCoGA1UE
+  -----END CERTIFICATE-----
+
+backend2.example.com_https_certificate_content: |
+  -----BEGIN CERTIFICATE-----
+  MIIJPzCCCCegAwIBAgIUHQ+y3YdVwWt+SKv5alTNmg8lsWUwDQYJKoZIhvcNAQEL
+  BQAwUjELMAkGA1UEBhMCQ0gxFTATBgNVBAoTDFN3aXNzU2lnbiBBRzEsMCoGA1UE
+  TeJB0UUMX7SQXJLH0q6TxzXxow==
+  -----END CERTIFICATE-----
+
